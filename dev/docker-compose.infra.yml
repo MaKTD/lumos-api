@@ -1,0 +1,17 @@
+version: '3.7'
+
+name: lumos-api
+
+services:
+  postgres:
+    image: "postgres:16.4-alpine3.20"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: lumos
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./pg-data:/var/lib/postgresql/data
+      - ./db/10.init.sql:/docker-entrypoint-initdb.d/10.init.sql
