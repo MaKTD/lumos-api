@@ -3,6 +3,8 @@ version: '3.7'
 services:
   server:
     image: lumosapi:latest
+    networks:
+      - host
     environment:
       BOOSTRAP_BOOT_TIMEOUT: 5s
       BOOSTRAP_SHUTDOWN_TIMEOUT: 10s
@@ -18,7 +20,6 @@ services:
       HTTP_API_SERVE_PREFIX: /api
       HTTP_STATIC_SERVE_PREFIX: /static/
       HTTP_HTML_SERVE_PREFIX: /
-    network_mode: host
     ports:
       - target: 80
         published: 80
@@ -45,4 +46,9 @@ services:
 
 volumes:
   ssl-certs:
+    external: true
+
+networks:
+  host:
+    name: host
     external: true
