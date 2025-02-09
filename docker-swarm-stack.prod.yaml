@@ -18,6 +18,7 @@ services:
       HTTP_API_SERVE_PREFIX: /api
       HTTP_STATIC_SERVE_PREFIX: /static/
       HTTP_HTML_SERVE_PREFIX: /
+    network_mode: host
     ports:
       - target: 80
         published: 80
