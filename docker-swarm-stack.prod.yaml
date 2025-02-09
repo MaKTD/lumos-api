@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   server:
-    image: localhost:500/lumos-api:latest
+    image: localhost:5000/lumos-api:latest
     environment:
       BOOSTRAP_BOOT_TIMEOUT: 5s
       BOOSTRAP_SHUTDOWN_TIMEOUT: 10s
