@@ -26,10 +26,10 @@ services:
       HTTP_AUTO_CERT_HOSTS: api.lumos-care.ru
       HTTP_AUTO_CERT_EMAIL: skyksusha@gmail.com
     ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
+#      - target: 80
+#        published: 80
+#        protocol: tcp
+#        mode: host
       - target: 443
         published: 443
         protocol: tcp
