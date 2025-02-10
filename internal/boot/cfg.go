@@ -65,9 +65,10 @@ type AppHttpServerConf struct {
 }
 
 type AppHttpHandleConf struct {
-	PingRoute         string `env:"HTTP_PING_ROUTE" envDefault:"/ping"`
-	ApiServePrefix    string `env:"HTTP_API_SERVE_PREFIX" envDefault:"/api"`
-	StaticServePrefix string `env:"HTTP_STATIC_SERVE_PREFIX" envDefault:"/static/"`
-	HtmlServerPrefix  string `env:"HTTP_HTML_SERVE_PREFIX" envDefault:"/"`
-	StaticServePath   string `env:"HTTP_STATIC_SOURCE_PATH" envDefault:"./web/assets"`
+	PingRoute           string `env:"HTTP_PING_ROUTE" envDefault:"/ping"`
+	ApiServePrefix      string `env:"HTTP_API_SERVE_PREFIX" envDefault:"/api"`
+	ApiCorsAllowedHosts string `env:"HTTP_API_CORS_ALLOWED_HOSTS" envDefault:"http://localhost"`
+	StaticServePrefix   string `env:"HTTP_STATIC_SERVE_PREFIX" envDefault:"/static/"`
+	HtmlServerPrefix    string `env:"HTTP_HTML_SERVE_PREFIX" envDefault:"/"`
+	StaticServePath     string `env:"HTTP_STATIC_SOURCE_PATH" envDefault:"./web/assets"`
 }

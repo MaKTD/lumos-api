@@ -15,9 +15,11 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"log/slog"
 	"net/http"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
@@ -66,6 +68,16 @@ func (a *App) Init() error {
 	a.HttpRouter = chi.NewRouter()
 	a.HttpRouter.Use(
 		middleware.Recoverer,
+		cors.Handler(cors.Options{
+			// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+			AllowedOrigins: strings.Split(a.Conf.AppHttpHandle.ApiCorsAllowedHosts, ","),
+			// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+			AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+			ExposedHeaders:   []string{"Link"},
+			AllowCredentials: true,
+			MaxAge:           300, // Maximum value not ignored by any of major browsers
+		}),
 	)
 	a.HttpRouter.Route(a.Conf.AppHttpHandle.ApiServePrefix, func(r chi.Router) {
 		r.Get(a.Conf.AppHttpHandle.PingRoute, api.NewPingHandlerFunc())
