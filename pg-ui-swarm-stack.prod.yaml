@@ -139,7 +139,7 @@ services:
       - msar-media:/code/media
       - msar-static:/code/static
       - msar-caddy:/data
-      - /etc/hosts:/etc/hosts
+      - ./Caddyfile:/etc/caddy/Caddyfile
 
 
 volumes:
