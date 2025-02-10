@@ -20,6 +20,10 @@ services:
       HTTP_API_SERVE_PREFIX: /api
       HTTP_STATIC_SERVE_PREFIX: /static/
       HTTP_HTML_SERVE_PREFIX: /
+      HTTP_AUTO_CERT_ENABLED: "true"
+      HTTP_AUTO_CERT_CACHE_DIR: /certificates
+      HTTP_AUTO_CERT_HOSTS: api.lumos-care.ru
+      HTTP_AUTO_CERT_EMAIL: skyksusha@gmail.com
     ports:
       - target: 80
         published: 80

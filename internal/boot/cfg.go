@@ -58,6 +58,10 @@ type AppHttpServerConf struct {
 	ReadHeaderTimeout time.Duration `env:"HTTP_READ_HEADER_TIMEOUT" envDefault:"0"`
 	WriteTimeout      time.Duration `env:"HTTP_WRITE_TIMEOUT" envDefault:"0"`
 	IdleTimeout       time.Duration `env:"HTTP_IDLE_TIMEOUT" envDefault:"5m"`
+	AutoCertEnabled   bool          `env:"HTTP_AUTO_CERT_ENABLED" envDefault:"false"`
+	AutoCertCacheDir  string        `env:"HTTP_AUTO_CERT_CACHE_DIR" envDefault:"/certificates"`
+	AutoCertEmail     string        `env:"HTTP_AUTO_CERT_EMAIL" envDefault:"local@mail.com"`
+	AutoCertHosts     string        `env:"HTTP_AUTO_CERT_HOSTS" envDefault:"localhost"`
 }
 
 type AppHttpHandleConf struct {
