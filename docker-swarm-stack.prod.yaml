@@ -13,7 +13,7 @@ services:
       PG_CONNECTION_TIMEOUT: 10s
       LOG_LEVEL: info
       LOG_PRETTY: 'false'
-      HTTP_LISTEN_PORT: 80
+      HTTP_LISTEN_PORT: 443
       HTTP_LISTEN_HOST: '0.0.0.0'
       HTTP_IDLE_TIMEOUT: 1m
       HTTP_PING_ROUTE: /ping
