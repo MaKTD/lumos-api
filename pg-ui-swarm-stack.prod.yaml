@@ -139,6 +139,7 @@ services:
       - msar-media:/code/media
       - msar-static:/code/static
       - msar-caddy:/data
+      - /etc/hosts:/etc/hosts
 
 
 volumes:
