@@ -3,6 +3,7 @@ package auth_logs
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strings"
 )
 
@@ -38,11 +39,13 @@ func (r *Service) SaveAuthTelemetry(
 		}
 	}
 
+	fmt.Println(login, ipAddr, fingerprintId, fingerprintScore, userAgent)
+
 	query := `
 		INSERT INTO lumos.auth_logs
 		(login, ip, fingerprint, confidencescore, useragent)
 		VALUES 
-		($1, $2, $3, $4);
+		($1, $2, $3, $4, $5);
     `
 
 	_, err := r.db.ExecContext(ctx, query, login, ipAddr, fingerprintId, fingerprintScore, userAgent)
