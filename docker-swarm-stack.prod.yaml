@@ -30,6 +30,7 @@ services:
       TG_BOT_POLLER_TIMEOUT: 30s
       TG_BOT_DEBUG: 'false'
       UNISENDER_API_KEY: ${UNISENDER_API_KEY}
+      HTTP_TRIAL_PAYMENTS_ROUTE_HASH: ${HTTP_TRIAL_PAYMENTS_ROUTE_HASH}
     ports:
       #      - target: 80
       #        published: 80
