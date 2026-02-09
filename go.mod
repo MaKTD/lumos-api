@@ -15,6 +15,7 @@ require (
 	github.com/rs/cors v1.11.1
 	github.com/sergeyandreenko/unisender v0.0.4
 	github.com/stretchr/testify v1.11.1
+	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
 	gopkg.in/telebot.v4 v4.0.0-beta.7
 )
 
@@ -25,6 +26,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
+	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2 // indirect
 	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

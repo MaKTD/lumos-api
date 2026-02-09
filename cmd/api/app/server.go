@@ -136,6 +136,10 @@ func (r *Server) Init() error {
 		IdleTimeout:       r.cfg.http.IdleTimeout,
 		MaxHeaderBytes:    r.cfg.http.MaxHeaderBytes,
 		ShutdownTimeout:   r.cfg.http.ShutdownTimeout,
+		AutoCertEnabled:   r.cfg.http.AutoCertEnabled,
+		AutoCertCacheDir:  r.cfg.http.AutoCertCacheDir,
+		AutoCertEmail:     r.cfg.http.AutoCertEmail,
+		AutoCertHosts:     r.cfg.http.AutoCertHosts,
 	}, apiHandler, r.rootLogger)
 
 	r.rootLogger.Info("app initialized")

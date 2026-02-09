@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
+
+	"golang.org/x/crypto/acme/autocert"
 )
 
 type Server struct {
@@ -26,6 +29,10 @@ type Config struct {
 	MaxHeaderBytes    int
 	ShutdownTimeout   time.Duration
 	TLSconfig         *tls.Config
+	AutoCertEnabled   bool
+	AutoCertCacheDir  string
+	AutoCertEmail     string
+	AutoCertHosts     string
 }
 
 func NewServer(config Config, handler http.Handler, rootLogger *slog.Logger) *Server {
@@ -46,7 +53,7 @@ func NewServer(config Config, handler http.Handler, rootLogger *slog.Logger) *Se
 		logger = slog.Default()
 	}
 
-	return &Server{
+	server := &Server{
 		shutdownTimeout: config.ShutdownTimeout,
 		logger:          logger,
 		server: &http.Server{
@@ -61,6 +68,21 @@ func NewServer(config Config, handler http.Handler, rootLogger *slog.Logger) *Se
 			TLSConfig:         config.TLSconfig,
 		},
 	}
+
+	if config.AutoCertEnabled {
+		hosts := strings.Split(config.AutoCertHosts, ",")
+
+		manager := &autocert.Manager{
+			Cache:      autocert.DirCache(config.AutoCertCacheDir),
+			Prompt:     autocert.AcceptTOS,
+			Email:      config.AutoCertEmail,
+			HostPolicy: autocert.HostWhitelist(hosts...),
+		}
+
+		server.server.TLSConfig = manager.TLSConfig()
+	}
+
+	return server
 }
 
 func (r *Server) Run(ctx context.Context) error {

@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   server:
@@ -10,11 +10,11 @@ services:
       BOOSTRAP_SHUTDOWN_TIMEOUT: 10s
       APP_NAME: LUMOS-API
       PG_URL: ${PG_URL}
-      PG_CONNECTION_TIMEOUT: 10s
+      PG_MAX_CONN: 10
+      PG_MAX_CONN_IDLE_TIME: 1h
       LOG_LEVEL: info
-      LOG_PRETTY: 'false'
-      HTTP_LISTEN_PORT: 443
-      HTTP_LISTEN_HOST: '0.0.0.0'
+      LOG_PRETTY: "false"
+      HTTP_ADDR: "0.0.0.0:443"
       HTTP_IDLE_TIMEOUT: 1m
       HTTP_PING_ROUTE: /ping
       HTTP_API_SERVE_PREFIX: /api
@@ -25,11 +25,16 @@ services:
       HTTP_AUTO_CERT_CACHE_DIR: /certificates
       HTTP_AUTO_CERT_HOSTS: api.lumos-care.ru
       HTTP_AUTO_CERT_EMAIL: skyksusha@gmail.com
+      TG_BOT_TOKEN: {TG_BOT_TOKEN}
+      TG_BOT_ADMIN_CHAT_ID: {TG_BOT_ADMIN_CHAT_ID}
+      TG_BOT_POLLER_TIMEOUT: 30s
+      TG_BOT_DEBUG: 'false'
+      UNISENDER_API_KEY: {UNISENDER_API_KEY}
     ports:
-#      - target: 80
-#        published: 80
-#        protocol: tcp
-#        mode: host
+      #      - target: 80
+      #        published: 80
+      #        protocol: tcp
+      #        mode: host
       - target: 443
         published: 443
         protocol: tcp
