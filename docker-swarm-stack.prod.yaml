@@ -13,15 +13,15 @@ services:
       PG_MAX_CONN: 10
       PG_MAX_CONN_IDLE_TIME: 1h
       LOG_LEVEL: info
-      LOG_PRETTY: "false"
-      HTTP_ADDR: "0.0.0.0:443"
+      LOG_PRETTY: 'false'
+      HTTP_ADDR: 0.0.0.0:443
       HTTP_IDLE_TIMEOUT: 1m
       HTTP_PING_ROUTE: /ping
       HTTP_API_SERVE_PREFIX: /api
-      HTTP_API_CORS_ALLOWED_HOSTS: "https://lumos-care.ru*,https://api.lumos-care.ru*"
+      HTTP_API_CORS_ALLOWED_HOSTS: 'https://lumos-care.ru*,https://api.lumos-care.ru*'
       HTTP_STATIC_SERVE_PREFIX: /static/
       HTTP_HTML_SERVE_PREFIX: /
-      HTTP_AUTO_CERT_ENABLED: "true"
+      HTTP_AUTO_CERT_ENABLED: 'true'
       HTTP_AUTO_CERT_CACHE_DIR: /certificates
       HTTP_AUTO_CERT_HOSTS: api.lumos-care.ru
       HTTP_AUTO_CERT_EMAIL: skyksusha@gmail.com
