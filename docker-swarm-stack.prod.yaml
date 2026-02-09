@@ -25,11 +25,11 @@ services:
       HTTP_AUTO_CERT_CACHE_DIR: /certificates
       HTTP_AUTO_CERT_HOSTS: api.lumos-care.ru
       HTTP_AUTO_CERT_EMAIL: skyksusha@gmail.com
-      TG_BOT_TOKEN: {TG_BOT_TOKEN}
-      TG_BOT_ADMIN_CHAT_ID: {TG_BOT_ADMIN_CHAT_ID}
+      TG_BOT_TOKEN: ${TG_BOT_TOKEN}
+      TG_BOT_ADMIN_CHAT_ID: ${TG_BOT_ADMIN_CHAT_ID}
       TG_BOT_POLLER_TIMEOUT: 30s
       TG_BOT_DEBUG: 'false'
-      UNISENDER_API_KEY: {UNISENDER_API_KEY}
+      UNISENDER_API_KEY: ${UNISENDER_API_KEY}
     ports:
       #      - target: 80
       #        published: 80
