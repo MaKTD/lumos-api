@@ -35,7 +35,8 @@ type handlersConf struct {
 }
 
 type Unisender struct {
-	ApiKey string `env:"UNISENDER_API_KEY,required"`
+	ApiKey                     string `env:"UNISENDER_API_KEY,required"`
+	AfterTrialExpiredListTitle string `env:"UNISENDER_AFTER_TRIAL_EXPIRED_LIST_TITLE" envDefault:"Lumos закончился пробный"`
 }
 
 func (r *config) load() error {

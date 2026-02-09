@@ -83,7 +83,12 @@ func (r *Server) Init() error {
 
 	usersRepo := pg.NewUserRepo(r.db)
 
-	emailSrv := emails.NewUniSenderSrv(r.cfg.unisender.ApiKey)
+	emailSrv := emails.NewUniSenderSrv(
+		r.cfg.unisender.ApiKey,
+		emails.UniSenderSrvCfg{
+			AfterTrialExpiredListTitle: r.cfg.unisender.AfterTrialExpiredListTitle,
+		},
+	)
 
 	paymentSrv := payments.NewPaymentsService(
 		usersRepo,
