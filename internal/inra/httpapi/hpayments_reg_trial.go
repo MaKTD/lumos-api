@@ -16,6 +16,7 @@ type paymentRegTrial struct {
 
 func (s *paymentRegTrial) Handle(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
+		s.notifer.ForAdmin("[TrialFormHanlder] recieve invalid form")
 		http.Error(w, "invalid form", http.StatusBadRequest)
 		return
 	}
