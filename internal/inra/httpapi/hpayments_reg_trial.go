@@ -27,14 +27,16 @@ func (s *paymentRegTrial) Handle(w http.ResponseWriter, r *http.Request) {
 
 	if email == "" {
 		s.notifer.ForAdmin(fmt.Sprintf("[TrialFormHandler] recieve email form without email field specified, name = %s, phone = %s", name, phone))
-		http.Error(w, "missing required fields", http.StatusBadRequest)
+		w.WriteHeader(http.StatusCreated)
+		// http.Error(w, "missing required fields", http.StatusBadRequest)
 		return
 	}
 
 	parsedDuration, err := strconv.Atoi(daysDuration)
 	if err != nil {
 		s.notifer.ForAdmin(fmt.Sprintf("[TrialFormHanlder] recieve email form without valid duration field specified, email = %s, duration = %s", email, daysDuration))
-		http.Error(w, "invalid duration", http.StatusBadRequest)
+		w.WriteHeader(http.StatusCreated)
+		// http.Error(w, "invalid duration", http.StatusBadRequest)
 		return
 	}
 
@@ -43,7 +45,8 @@ func (s *paymentRegTrial) Handle(w http.ResponseWriter, r *http.Request) {
 	err = s.srv.RegisterFromTrial(r.Context(), email, name, phone, trialDuration)
 	if err != nil {
 		s.notifer.ForAdmin(fmt.Sprintf("[TrialFormHandler] failed to register user from trial, email = %s, name = %s, phone = %s, duration = %d", email, name, phone, trialDuration))
-		http.Error(w, "failed to register", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusCreated)
+		// http.Error(w, "failed to register", http.StatusInternalServerError)
 		return
 	}
 
