@@ -1,7 +1,9 @@
 package payments
 
 import (
+	"context"
 	"doctormakarhina/lumos/internal/core/domain"
+	"doctormakarhina/lumos/internal/core/notify"
 	"errors"
 	"fmt"
 	"strings"
@@ -17,17 +19,23 @@ var (
 type service struct {
 	repo   UserRepo
 	emails EmailsSrv
-	notif  NotificationsSrv
+	notif  notify.Service
 }
 
-func NewPaymentsService(repo UserRepo, emails EmailsSrv) Payments {
+func NewPaymentsService(
+	repo UserRepo,
+	emails EmailsSrv,
+	notif notify.Service,
+) Service {
 	return &service{
 		repo:   repo,
 		emails: emails,
+		notif:  notif,
 	}
 }
 
 func (s *service) RegisterFromTrial(
+	ctx context.Context,
 	email string,
 	name string,
 	phone string,
@@ -35,7 +43,7 @@ func (s *service) RegisterFromTrial(
 ) error {
 	emailNorm := s.normalizeEmail(email)
 
-	user, err := s.repo.ByEmail(emailNorm)
+	user, err := s.repo.ByEmail(ctx, emailNorm)
 	if err != nil {
 		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromTrial]: error fetching user by email (%s): %v", emailNorm, err))
 		return err
@@ -55,13 +63,13 @@ func (s *service) RegisterFromTrial(
 		SubscriptionStatus: "",
 		LastSubPrice:       0,
 	}
-	_, err = s.repo.Create(*user)
+	_, err = s.repo.Create(ctx, *user)
 	if err != nil {
 		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromTrial]: error creating user (%s): %v", emailNorm, err))
 		return err
 	}
 
-	err = s.emails.ScheduleAfterTrialExpired(emailNorm)
+	err = s.emails.ScheduleAfterTrialExpired(ctx, emailNorm)
 	if err != nil {
 		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromTrial]: error scheduling email after trial expired for email (%s): %v", emailNorm, err))
 		return err

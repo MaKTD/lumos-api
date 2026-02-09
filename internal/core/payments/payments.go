@@ -1,26 +1,24 @@
 package payments
 
 import (
+	"context"
 	"doctormakarhina/lumos/internal/core/domain"
 	"time"
 )
 
 type UserRepo interface {
-	FindByEmailOrCreate(user domain.User) (*domain.User, error)
-	ByEmail(email string) (*domain.User, error)
-	Create(user domain.User) (*domain.User, error)
+	FindByEmailOrCreate(ctx context.Context, user domain.User) (*domain.User, error)
+	ByEmail(ctx context.Context, email string) (*domain.User, error)
+	Create(ctx context.Context, user domain.User) (*domain.User, error)
 }
 
 type EmailsSrv interface {
-	ScheduleAfterTrialExpired(email string) error
+	ScheduleAfterTrialExpired(ctx context.Context, email string) error
 }
 
-type NotificationsSrv interface {
-	ForAdmin(msg string)
-}
-
-type Payments interface {
+type Service interface {
 	RegisterFromTrial(
+		ctx context.Context,
 		email string,
 		name string,
 		phone string,

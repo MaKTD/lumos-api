@@ -2,7 +2,11 @@ package app
 
 import (
 	"context"
+	"doctormakarhina/lumos/internal/core/payments"
+	"doctormakarhina/lumos/internal/inra/emails"
 	"doctormakarhina/lumos/internal/inra/httpapi"
+	"doctormakarhina/lumos/internal/inra/pg"
+	"doctormakarhina/lumos/internal/inra/tgbot"
 	"doctormakarhina/lumos/internal/pkg/db"
 	"doctormakarhina/lumos/internal/pkg/envconf"
 	"doctormakarhina/lumos/internal/pkg/httpx"
@@ -26,6 +30,7 @@ type Server struct {
 	cfg        *config
 	rootLogger *slog.Logger
 	db         *sqlx.DB
+	bot        *tgbot.Bot
 	api        *httpx.Server
 }
 
@@ -68,6 +73,24 @@ func (r *Server) Init() error {
 		return fmt.Errorf("failed to ping db: %w", err)
 	}
 
+	r.bot, err = tgbot.NewAdminTgBot(tgbot.BotCfg{
+		Token:         r.cfg.tgBot.Token,
+		ChatID:        r.cfg.tgBot.AdminChatID,
+		Debug:         r.cfg.tgBot.Debug,
+		PollerTimeout: r.cfg.tgBot.PollerTimeout,
+		Logger:        r.rootLogger,
+	})
+
+	usersRepo := pg.NewUserRepo(r.db)
+
+	emailSrv := emails.NewUniSenderSrv(r.cfg.unisender.ApiKey)
+
+	paymentSrv := payments.NewPaymentsService(
+		usersRepo,
+		emailSrv,
+		r.bot,
+	)
+
 	apiHandler := httpapi.NewRouter()
 	apiHandler.Use(
 		cors.Handler(cors.Options{
@@ -87,6 +110,12 @@ func (r *Server) Init() error {
 		httpapi.RegInHealthz(router, r.rootLogger)
 		httpapi.RegInAuthLogs(router, r.db, r.rootLogger)
 		httpapi.RegInSearchLogs(router, r.db, r.rootLogger)
+		httpapi.RegInTrialPayments(
+			router,
+			r.cfg.handlers.TrialPaymentsRouteHash,
+			paymentSrv,
+			r.bot,
+		)
 	})
 
 	// TODO(add client side caching, etag probably??)
@@ -133,6 +162,17 @@ func (r *Server) Run() error {
 			},
 			func(err error) {
 				close(cancel)
+			},
+		)
+	}
+	{
+		ctx, cancel := context.WithCancel(context.Background())
+		g.Add(
+			func() error {
+				return r.bot.Run(ctx)
+			},
+			func(err error) {
+				cancel()
 			},
 		)
 	}

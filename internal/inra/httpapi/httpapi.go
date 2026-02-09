@@ -1,6 +1,8 @@
 package httpapi
 
 import (
+	"doctormakarhina/lumos/internal/core/notify"
+	"doctormakarhina/lumos/internal/core/payments"
 	"log/slog"
 	"net/http"
 	"time"
@@ -40,4 +42,16 @@ func RegInSearchLogs(r chi.Router, db *sqlx.DB, rootLogger *slog.Logger) {
 	srv := &searchLogs{db: db, logger: rootLogger.With(slog.String("context", "SearchLogs"))}
 
 	r.Post("/search/telemetry", srv.Handle)
+}
+
+func RegInTrialPayments(
+	r chi.Router,
+	routeHash string,
+	srv payments.Service,
+	notifer notify.Service,
+
+) {
+	trialSrv := paymentRegTrial{srv: srv, notifer: notifer}
+
+	r.Post("/payments/trial/"+routeHash, trialSrv.Handle)
 }
