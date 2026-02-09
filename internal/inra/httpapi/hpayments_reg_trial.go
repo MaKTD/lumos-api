@@ -45,7 +45,7 @@ func (s *paymentRegTrial) Handle(w http.ResponseWriter, r *http.Request) {
 
 	err = s.srv.RegisterFromTrial(r.Context(), email, name, phone, trialDuration)
 	if err != nil {
-		s.notifer.ForAdmin(fmt.Sprintf("[TrialFormHandler] failed to register user from trial, email = %s, name = %s, phone = %s, duration = %d", email, name, phone, trialDuration))
+		// s.notifer.ForAdmin(fmt.Sprintf("[TrialFormHandler] failed to register user from trial, email = %s, name = %s, phone = %s, duration = %d", email, name, phone, trialDuration))
 		w.WriteHeader(http.StatusCreated)
 		// http.Error(w, "failed to register", http.StatusInternalServerError)
 		return
