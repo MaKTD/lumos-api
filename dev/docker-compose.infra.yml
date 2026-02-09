@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 name: lumos-api
 
@@ -13,5 +13,5 @@ services:
       POSTGRES_DB: lumos
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./pg-data:/var/lib/postgresql/data
+      - ./_pg-data:/var/lib/postgresql/data
       - ./db/10.init.sql:/docker-entrypoint-initdb.d/10.init.sql

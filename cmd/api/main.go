@@ -1,18 +1,18 @@
 package main
 
 import (
-	"doctormakarhina/lumos/internal/boot"
+	"doctormakarhina/lumos/cmd/api/app"
+	"doctormakarhina/lumos/internal/inra/boot"
 	"log/slog"
 	"os"
 )
 
 func main() {
-	err := boot.StartApp()
+	err := boot.StartApp(&app.Server{})
 	if err != nil {
-		slog.Error("application bootstrap failed with error", slog.String("err", err.Error()))
+		slog.Error("error during bootstrap or running app", slog.String("err", err.Error()))
 		os.Exit(1)
 	} else {
-		slog.Info("application was successfully closed")
-		os.Exit(0)
+		slog.Info("app has been shutdowned")
 	}
 }

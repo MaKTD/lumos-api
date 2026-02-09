@@ -39,3 +39,17 @@ CREATE TABLE lumos.search_queries (
 
 CREATE INDEX lumox_search_query_query
 ON lumos.search_queries (query ASC NULLS LAST);
+
+-- Enable UUID generation (recommended)
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE TABLE IF NOT EXISTS lumos.users (
+  id                   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  email                varchar NOT NULL UNIQUE,
+  name                 varchar NOT NULL,
+  tariff               varchar NOT NULL,
+  expires_at           timestamptz NOT NULL,
+  subscription_id      varchar NOT NULL,
+  subscription_status  varchar NOT NULL,
+  last_sub_price       real NOT NULL
+);
