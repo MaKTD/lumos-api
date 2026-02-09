@@ -43,6 +43,9 @@ func (s *service) RegisterFromTrial(
 ) error {
 	emailNorm := s.normalizeEmail(email)
 
+	// TODO: remove
+	fmt.Println(emailNorm)
+
 	user, err := s.repo.ByEmail(ctx, emailNorm)
 	if err != nil {
 		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromTrial]: error fetching user by email (%s): %v", emailNorm, err))
@@ -63,6 +66,9 @@ func (s *service) RegisterFromTrial(
 		SubscriptionStatus: "",
 		LastSubPrice:       0,
 	}
+
+	fmt.Println("user", user)
+
 	_, err = s.repo.Create(ctx, *user)
 	if err != nil {
 		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromTrial]: error creating user (%s): %v", emailNorm, err))
