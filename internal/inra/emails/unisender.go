@@ -24,7 +24,7 @@ func NewUniSenderSrv(
 	cfg UniSenderSrvCfg,
 ) *UniSenderSrv {
 	client := unisender.New(apiKey)
-	return &UniSenderSrv{client: client}
+	return &UniSenderSrv{client: client, cfg: cfg}
 }
 
 func (r *UniSenderSrv) ScheduleAfterTrialExpired(ctx context.Context, email string) error {
