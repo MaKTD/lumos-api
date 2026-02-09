@@ -13,22 +13,22 @@ services:
       PG_MAX_CONN: 10
       PG_MAX_CONN_IDLE_TIME: 1h
       LOG_LEVEL: info
-      LOG_PRETTY: 'false'
+      LOG_PRETTY: "false"
       HTTP_ADDR: 0.0.0.0:443
       HTTP_IDLE_TIMEOUT: 1m
       HTTP_PING_ROUTE: /ping
       HTTP_API_SERVE_PREFIX: /api
-      HTTP_API_CORS_ALLOWED_HOSTS: 'https://lumos-care.ru*,https://api.lumos-care.ru*'
+      HTTP_API_CORS_ALLOWED_HOSTS: "*"
       HTTP_STATIC_SERVE_PREFIX: /static/
       HTTP_HTML_SERVE_PREFIX: /
-      HTTP_AUTO_CERT_ENABLED: 'true'
+      HTTP_AUTO_CERT_ENABLED: "true"
       HTTP_AUTO_CERT_CACHE_DIR: /certificates
       HTTP_AUTO_CERT_HOSTS: api.lumos-care.ru
       HTTP_AUTO_CERT_EMAIL: skyksusha@gmail.com
       TG_BOT_TOKEN: ${TG_BOT_TOKEN}
       TG_BOT_ADMIN_CHAT_ID: ${TG_BOT_ADMIN_CHAT_ID}
       TG_BOT_POLLER_TIMEOUT: 30s
-      TG_BOT_DEBUG: 'false'
+      TG_BOT_DEBUG: "false"
       UNISENDER_API_KEY: ${UNISENDER_API_KEY}
       HTTP_TRIAL_PAYMENTS_ROUTE_HASH: ${HTTP_TRIAL_PAYMENTS_ROUTE_HASH}
     ports:
