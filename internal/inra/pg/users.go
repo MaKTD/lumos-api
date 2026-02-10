@@ -180,7 +180,6 @@ func (r *UserRepo) UpdateSub(ctx context.Context, user domain.User) (*domain.Use
 	return &updated, nil
 }
 
-
 func (r *UserRepo) UpdateSubStatusBySubID(ctx context.Context, subscriptionID string, status string) error {
 	tx, err := r.db.BeginTxx(ctx, nil)
 	if err != nil {
@@ -210,7 +209,7 @@ func (r *UserRepo) UpdateSubStatusBySubID(ctx context.Context, subscriptionID st
 		return err
 	}
 	if affected == 0 {
-		return fmt.Errorf("user with subscription_id %s, do not found for status update", subscriptionID)
+		return fmt.Errorf("user with provided subscription_id do not found for status update")
 	}
 
 	if err := tx.Commit(); err != nil {
