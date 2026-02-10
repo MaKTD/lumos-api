@@ -163,6 +163,13 @@ func (s *service) RegisterFromProdamus(
 		return err
 	}
 
+	s.notif.ForAdmin(fmt.Sprintf(
+		"[RegisterFromProdamus]: user payment is accepted (%s), tariff: %s, expires at: %s",
+		emailNorm,
+		tariffName,
+		newExpiresAt.Format(time.RFC3339),
+	))
+
 	return nil
 }
 
