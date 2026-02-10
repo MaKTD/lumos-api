@@ -23,11 +23,11 @@ func (s *paymentRegTrial) Handle(w http.ResponseWriter, r *http.Request) {
 
 	name := r.FormValue("name")
 	email := r.FormValue("email")
-	phone := r.FormValue("phone")
+	// phone := r.FormValue("phone")
 	daysDuration := r.FormValue("daysDuration")
 
 	if email == "" {
-		s.notifer.ForAdmin(fmt.Sprintf("[TrialFormHandler] recieve email form without email field specified, name = %s, phone = %s", name, phone))
+		s.notifer.ForAdmin(fmt.Sprintf("[TrialFormHandler] recieve email form without email field specified, name = %s", name))
 		w.WriteHeader(http.StatusCreated)
 		// http.Error(w, "missing required fields", http.StatusBadRequest)
 		return
@@ -43,7 +43,7 @@ func (s *paymentRegTrial) Handle(w http.ResponseWriter, r *http.Request) {
 
 	trialDuration := time.Duration(parsedDuration) * time.Hour * 24
 
-	err = s.srv.RegisterFromTrial(r.Context(), email, name, phone, trialDuration)
+	err = s.srv.RegisterFromTrial(r.Context(), email, name, trialDuration)
 	if err != nil {
 		// s.notifer.ForAdmin(fmt.Sprintf("[TrialFormHandler] failed to register user from trial, email = %s, name = %s, phone = %s, duration = %d", email, name, phone, trialDuration))
 		w.WriteHeader(http.StatusCreated)

@@ -55,3 +55,19 @@ func RegInTrialPayments(
 
 	r.Post("/payments/trial/"+routeHash, trialSrv.Handle)
 }
+
+func RegInProdamusPayWebHook(
+	r chi.Router,
+	routeHash string,
+	srv payments.Service,
+	notifer notify.Service,
+	logger *slog.Logger,
+) {
+	prodamusSrv := prodamusPayNotification{
+		srv:     srv,
+		notifer: notifer,
+		logger:  logger.With(slog.String("context", "ProdamusPayNotificationHandler")),
+	}
+
+	r.Post("/payments/prodamus/webhook/pay/"+routeHash, prodamusSrv.Handle)
+}

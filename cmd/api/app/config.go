@@ -25,13 +25,16 @@ type tgBotConfig struct {
 }
 
 type handlersConf struct {
-	PingRoute              string `env:"HTTP_PING_ROUTE" envDefault:"/ping"`
-	ApiServePrefix         string `env:"HTTP_API_SERVE_PREFIX" envDefault:"/api"`
-	ApiCorsAllowedHosts    string `env:"HTTP_API_CORS_ALLOWED_HOSTS" envDefault:"http://localhost"`
-	StaticServePrefix      string `env:"HTTP_STATIC_SERVE_PREFIX" envDefault:"/static/"`
-	HtmlServerPrefix       string `env:"HTTP_HTML_SERVE_PREFIX" envDefault:"/"`
-	StaticServePath        string `env:"HTTP_STATIC_SOURCE_PATH" envDefault:"./web/assets"`
-	TrialPaymentsRouteHash string `env:"HTTP_TRIAL_PAYMENTS_ROUTE_HASH,required"`
+	PingRoute                       string `env:"HTTP_PING_ROUTE" envDefault:"/ping"`
+	ApiServePrefix                  string `env:"HTTP_API_SERVE_PREFIX" envDefault:"/api"`
+	ApiCorsAllowedHosts             string `env:"HTTP_API_CORS_ALLOWED_HOSTS" envDefault:"http://localhost"`
+	StaticServePrefix               string `env:"HTTP_STATIC_SERVE_PREFIX" envDefault:"/static/"`
+	HtmlServerPrefix                string `env:"HTTP_HTML_SERVE_PREFIX" envDefault:"/"`
+	StaticServePath                 string `env:"HTTP_STATIC_SOURCE_PATH" envDefault:"./web/assets"`
+	TrialPaymentsRouteHash          string `env:"HTTP_TRIAL_PAYMENTS_ROUTE_HASH,required"`
+	ProdamusPayRouteHash            string `env:"HTTP_PRODAMUS_PAYMENT_NOTIFICATION_ROUTE_HASH,required"`
+	CloudPaymentsPayRouteHash       string `env:"HTTP_CLOUD_PAYMENTS_PAY_NOTIFICATION_ROUTE_HASH,required"`
+	CloudPaymentsRecurrentRouteHash string `env:"HTTP_CLOUD_PAYMENTS_RECURRENT_NOTIFICATION_ROUTE_HASH,required"`
 }
 
 type Unisender struct {

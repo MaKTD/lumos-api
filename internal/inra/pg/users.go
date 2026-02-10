@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"doctormakarhina/lumos/internal/core/domain"
 	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -126,4 +127,45 @@ func (r *UserRepo) FindByEmailOrCreate(ctx context.Context, user domain.User) (*
 	}
 
 	return &created, nil
+}
+
+func (r *UserRepo) UpdateSub(ctx context.Context, user domain.User) error {
+	tx, err := r.db.BeginTxx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	// Concurrency safety:
+	// serialize subscription updates per user within this transaction to avoid concurrent updates racing.
+	if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, user.Email); err != nil {
+		return err
+	}
+
+	const q = `
+  UPDATE lumos.users
+  SET tariff = $1,
+      last_sub_price = $2,
+      expires_at = $3
+  WHERE id = $4
+ `
+
+	res, err := tx.ExecContext(ctx, q, user.Tariff, user.LastSubPrice, user.ExpiresAt, user.ID)
+	if err != nil {
+		return err
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return fmt.Errorf("user with id %s, do not found for sub update", user.ID)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }

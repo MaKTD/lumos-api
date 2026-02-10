@@ -48,6 +48,28 @@ func (u *User) SubExpired(now time.Time) bool {
 	return now.After(u.ExpiresAt)
 }
 
+func (u *User) NewSubStartedAt(now time.Time) time.Time {
+	if u.SubExpired(now) {
+		return now
+	}
+
+	return u.ExpiresAt
+}
+
+func (u *User) NewSubEndedAt(now time.Time, tarrif string) (time.Time, error) {
+	startedAt := u.NewSubStartedAt(now)
+
+	if tarrif == UserTariff1Month {
+		return startedAt.AddDate(0, 1, 0), nil
+	} else if tarrif == UserTariff3Months {
+		return startedAt.AddDate(0, 3, 0), nil
+	} else if tarrif == UserTariff6Months {
+		return startedAt.AddDate(0, 6, 0), nil
+	}
+
+	return time.Time{}, fmt.Errorf("tariff %s is unknown or can not be used with subscription", tarrif)
+}
+
 func (u *User) StatusInfo(now time.Time) string {
 	if u.Tariff == UserTariffUnlimited {
 		return "Тариф: " + u.Tariff

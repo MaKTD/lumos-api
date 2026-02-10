@@ -20,7 +20,6 @@ type SaveSearchTelemetryRequestBody struct {
 	Query string `json:"query"`
 }
 
-// type ProductSearchRes struct {
-// 	Products []domain.Product `json:"products"`
-// 	Total    int              `json:"total"`
-// }
+type ProdamusPayNotificationRes struct {
+	Success bool `json:"success"`
+}

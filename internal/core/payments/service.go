@@ -6,6 +6,7 @@ import (
 	"doctormakarhina/lumos/internal/core/notify"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -14,6 +15,18 @@ import (
 
 var (
 	ErrUserAlreadyRegistered = errors.New("user already registered")
+	oneMonthSubNames         = []string{
+		strings.ToLower(strings.TrimSpace("Доступ на месяц")),
+		strings.ToLower(strings.TrimSpace("Продление 1 месяц")),
+	}
+	threeMonthsSubNames = []string{
+		strings.ToLower(strings.TrimSpace("Доступ на 3 месяца")),
+		strings.ToLower(strings.TrimSpace("Продление 3 месяца")),
+	}
+	sixMonthsSubNames = []string{
+		strings.ToLower(strings.TrimSpace("Доступ на 6 месяцев")),
+		strings.ToLower(strings.TrimSpace("Продление 6 месяцев")),
+	}
 )
 
 type service struct {
@@ -38,10 +51,9 @@ func (s *service) RegisterFromTrial(
 	ctx context.Context,
 	email string,
 	name string,
-	phone string,
 	trialDuration time.Duration,
 ) error {
-	emailNorm := s.normalizeEmail(email)
+	emailNorm := s.normalizeStr(email)
 
 	user, err := s.repo.ByEmail(ctx, emailNorm)
 	if err != nil {
@@ -85,6 +97,75 @@ func (s *service) RegisterFromTrial(
 	return nil
 }
 
-func (s *service) normalizeEmail(email string) string {
+func (s *service) RegisterFromProdamus(
+	ctx context.Context,
+	subName string,
+	email string,
+	name string,
+	price float32,
+) error {
+	emailNorm := s.normalizeStr(email)
+	subNorm := s.normalizeStr(subName)
+
+	var tariffName string
+	if slices.Contains(oneMonthSubNames, subNorm) {
+		tariffName = domain.UserTariff1Month
+	} else if slices.Contains(threeMonthsSubNames, subNorm) {
+		tariffName = domain.UserTariff3Months
+	} else if slices.Contains(sixMonthsSubNames, subNorm) {
+		tariffName = domain.UserTariff6Months
+	}
+
+	if tariffName == "" {
+		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromProdamus]: unknown tariff (%s), can not update user %s subscription", subNorm, email))
+		return nil
+	}
+
+	candidate := domain.User{
+		ID:                 uuid.New().String(),
+		Email:              emailNorm,
+		Name:               name,
+		Tariff:             tariffName,
+		ExpiresAt:          time.Now().Add(-time.Minute),
+		SubscriptionID:     "",
+		SubscriptionStatus: "",
+		LastSubPrice:       price,
+	}
+
+	user, err := s.repo.FindByEmailOrCreate(ctx, candidate)
+	if err != nil {
+		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromProdamus]: error finding or creating user (%s): %v", emailNorm, err))
+		return err
+	}
+	if user == nil {
+		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromProdamus]: failed to find or create user (%s)", emailNorm))
+		return fmt.Errorf("failed to find or create user")
+	}
+
+	err = s.emails.CancelTrialExpired(ctx, user.Email)
+	if err != nil {
+		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromProdamus]: error canceling trial for email (%s): %v", emailNorm, err))
+	}
+
+	newExpiresAt, err := user.NewSubEndedAt(time.Now(), tariffName)
+	if err != nil {
+		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromProdamus]: failed to calculate new expiration date for user (%s): %v", emailNorm, err))
+		return nil
+	}
+
+	user.Tariff = tariffName
+	user.LastSubPrice = price
+	user.ExpiresAt = newExpiresAt
+
+	err = s.repo.UpdateSub(ctx, *user)
+	if err != nil {
+		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromProdamus]: error updating user (%s): %v", emailNorm, err))
+		return err
+	}
+
+	return nil
+}
+
+func (s *service) normalizeStr(email string) string {
 	return strings.ToLower(strings.TrimSpace(email))
 }

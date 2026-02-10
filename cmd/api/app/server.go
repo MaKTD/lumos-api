@@ -121,6 +121,13 @@ func (r *Server) Init() error {
 			paymentSrv,
 			r.bot,
 		)
+		httpapi.RegInProdamusPayWebHook(
+			router,
+			r.cfg.handlers.ProdamusPayRouteHash,
+			paymentSrv,
+			r.bot,
+			r.rootLogger,
+		)
 	})
 
 	// TODO(add client side caching, etag probably??)

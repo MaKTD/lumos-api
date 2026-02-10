@@ -31,6 +31,10 @@ func (r *UniSenderSrv) ScheduleAfterTrialExpired(ctx context.Context, email stri
 	return r.subsribeToList(ctx, email, r.cfg.AfterTrialExpiredListTitle)
 }
 
+func (r *UniSenderSrv) CancelTrialExpired(ctx context.Context, email string) error {
+	return r.excludeFromList(ctx, email, r.cfg.AfterTrialExpiredListTitle)
+}
+
 func (r *UniSenderSrv) subsribeToList(ctx context.Context, email string, listTitle string) error {
 	lists, err := r.client.GetLists().Execute()
 	if err != nil {
@@ -52,6 +56,19 @@ func (r *UniSenderSrv) subsribeToList(ctx context.Context, email string, listTit
 	}
 
 	return nil
+}
+
+func (r *UniSenderSrv) excludeFromList(ctx context.Context, email string, listTitle string) error {
+	lists, err := r.client.GetLists().Execute()
+	if err != nil {
+		return err
+	}
+	list := r.findListWithTitle(listTitle, lists)
+	if list == nil {
+		return fmt.Errorf("failed to find list with title %s", listTitle)
+	}
+
+	return r.client.Exclude(email).ContactTypeEmail().ListIDs(list.ID).Execute()
 }
 
 func (r *UniSenderSrv) findListWithTitle(targetTitle string, all []lists.GetListsResult) *lists.GetListsResult {
