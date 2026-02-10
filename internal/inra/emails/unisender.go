@@ -11,7 +11,9 @@ import (
 )
 
 type UniSenderSrvCfg struct {
-	AfterTrialExpiredListTitle string
+	AfterTrialExpiredListTitle         string
+	AfterReccurrentPaymentListTitle    string
+	AfterAutopaymentCancelledListTitle string
 }
 
 type UniSenderSrv struct {
@@ -35,6 +37,14 @@ func (r *UniSenderSrv) CancelTrialExpired(ctx context.Context, email string) err
 	return r.excludeFromList(ctx, email, r.cfg.AfterTrialExpiredListTitle)
 }
 
+func (r *UniSenderSrv) ScheduleAfterReccurrentPayment(ctx context.Context, email string) error {
+	return r.subsribeToList(ctx, email, r.cfg.AfterReccurrentPaymentListTitle)
+}
+
+func (r *UniSenderSrv) ScheduleAfterAutopaymentCancelled(ctx context.Context, email string) error {
+	return r.subsribeToList(ctx, email, r.cfg.AfterAutopaymentCancelledListTitle)
+}
+
 func (r *UniSenderSrv) subsribeToList(ctx context.Context, email string, listTitle string) error {
 	lists, err := r.client.GetLists().Execute()
 	if err != nil {
@@ -42,7 +52,7 @@ func (r *UniSenderSrv) subsribeToList(ctx context.Context, email string, listTit
 	}
 	list := r.findListWithTitle(listTitle, lists)
 	if list == nil {
-		return fmt.Errorf("failed to find list with title %s", r.cfg.AfterTrialExpiredListTitle)
+		return fmt.Errorf("failed to find list with title %s", listTitle)
 	}
 
 	_, err = r.client.Subscribe(list.ID).

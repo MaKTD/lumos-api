@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"doctormakarhina/lumos/internal/core/payments"
+	"doctormakarhina/lumos/internal/inra/cloudpayments"
 	"doctormakarhina/lumos/internal/inra/emails"
 	"doctormakarhina/lumos/internal/inra/httpapi"
 	"doctormakarhina/lumos/internal/inra/pg"
@@ -86,14 +87,27 @@ func (r *Server) Init() error {
 	emailSrv := emails.NewUniSenderSrv(
 		r.cfg.unisender.ApiKey,
 		emails.UniSenderSrvCfg{
-			AfterTrialExpiredListTitle: r.cfg.unisender.AfterTrialExpiredListTitle,
+			AfterTrialExpiredListTitle:         r.cfg.unisender.AfterTrialExpiredListTitle,
+			AfterReccurrentPaymentListTitle:    r.cfg.unisender.AfterReccurrentPaymentListTitle,
+			AfterAutopaymentCancelledListTitle: r.cfg.unisender.AfterAutopaymentCancelledListTitle,
 		},
 	)
+
+	cloudPaymentsClient, err := cloudpayments.New(cloudpayments.Config{
+		PublicID:   r.cfg.cloudPayments.PublicID,
+		APISecret:  r.cfg.cloudPayments.APISecret,
+		BaseURL:    r.cfg.cloudPayments.APIBaseURL,
+		HTTPClient: &http.Client{Timeout: 10 * time.Second},
+	})
+	if err != nil {
+		return err
+	}
 
 	paymentSrv := payments.NewPaymentsService(
 		usersRepo,
 		emailSrv,
 		r.bot,
+		cloudPaymentsClient,
 	)
 
 	apiHandler := httpapi.NewRouter()
@@ -124,6 +138,20 @@ func (r *Server) Init() error {
 		httpapi.RegInProdamusPayWebHook(
 			router,
 			r.cfg.handlers.ProdamusPayRouteHash,
+			paymentSrv,
+			r.bot,
+			r.rootLogger,
+		)
+		httpapi.RegInCloudPaymentsPayHook(
+			router,
+			r.cfg.handlers.CloudPaymentsPayRouteHash,
+			paymentSrv,
+			r.bot,
+			r.rootLogger,
+		)
+		httpapi.RegInCloudPaymentsReccurentNotif(
+			router,
+			r.cfg.handlers.CloudPaymentsRecurrentRouteHash,
 			paymentSrv,
 			r.bot,
 			r.rootLogger,

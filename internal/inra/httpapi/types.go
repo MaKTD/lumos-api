@@ -23,3 +23,7 @@ type SaveSearchTelemetryRequestBody struct {
 type ProdamusPayNotificationRes struct {
 	Success bool `json:"success"`
 }
+
+type CloudPaymentsNotificationRes struct {
+	Code int `json:"code"`
+}

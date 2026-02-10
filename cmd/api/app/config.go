@@ -8,13 +8,14 @@ import (
 )
 
 type config struct {
-	common    boot.CommonConfig
-	log       boot.LoggerConfig
-	pg        boot.PgConf
-	tgBot     tgBotConfig
-	http      boot.HttpConfig
-	handlers  handlersConf
-	unisender Unisender
+	common        boot.CommonConfig
+	log           boot.LoggerConfig
+	pg            boot.PgConf
+	tgBot         tgBotConfig
+	http          boot.HttpConfig
+	handlers      handlersConf
+	cloudPayments CloudPayments
+	unisender     Unisender
 }
 
 type tgBotConfig struct {
@@ -38,8 +39,16 @@ type handlersConf struct {
 }
 
 type Unisender struct {
-	ApiKey                     string `env:"UNISENDER_API_KEY,required"`
-	AfterTrialExpiredListTitle string `env:"UNISENDER_AFTER_TRIAL_EXPIRED_LIST_TITLE" envDefault:"Lumos закончился пробный"`
+	ApiKey                             string `env:"UNISENDER_API_KEY,required"`
+	AfterTrialExpiredListTitle         string `env:"UNISENDER_AFTER_TRIAL_EXPIRED_LIST_TITLE" envDefault:"Lumos закончился пробный"`
+	AfterReccurrentPaymentListTitle    string `env:"UNISENDER_AFTER_RECCURRENT_PAYMENT_LIST_TITLE" envDefault:"Lumos после автооплаты"`
+	AfterAutopaymentCancelledListTitle string `env:"UNISENDER_AFTER_AUTOPAYMENT_CANCELLED_LIST_TITLE" envDefault:"Lumos отмена автоплатежа"`
+}
+
+type CloudPayments struct {
+	PublicID   string `env:"CLOUDPAYMENTS_PUBLIC_ID,required"`
+	APISecret  string `env:"CLOUDPAYMENTS_API_SECRET,required"`
+	APIBaseURL string `env:"CLOUDPAYMENTS_API_BASE_URL" envDefault:"https://api.cloudpayments.ru"`
 }
 
 func (r *config) load() error {
@@ -50,6 +59,7 @@ func (r *config) load() error {
 		envconf.Load(&r.tgBot),
 		envconf.Load(&r.http),
 		envconf.Load(&r.handlers),
+		envconf.Load(&r.cloudPayments),
 		envconf.Load(&r.unisender),
 	)
 }

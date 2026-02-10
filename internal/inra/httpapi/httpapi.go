@@ -71,3 +71,35 @@ func RegInProdamusPayWebHook(
 
 	r.Post("/payments/prodamus/webhook/pay/"+routeHash, prodamusSrv.Handle)
 }
+
+func RegInCloudPaymentsPayHook(
+	r chi.Router,
+	routeHash string,
+	srv payments.Service,
+	notifer notify.Service,
+	logger *slog.Logger,
+) {
+	cpSrv := cloudPaymentsPayNotification{
+		srv:     srv,
+		notifer: notifer,
+		logger:  logger.With(slog.String("context", "CloudPaymentsPayNotificationHandler")),
+	}
+
+	r.Post("/payments/cloudpayment/webhook/pay/"+routeHash, cpSrv.Handle)
+}
+
+func RegInCloudPaymentsReccurentNotif(
+	r chi.Router,
+	routeHash string,
+	srv payments.Service,
+	notifer notify.Service,
+	logger *slog.Logger,
+) {
+	cpSrv := cloudPaymentReccurentNotif{
+		srv:     srv,
+		notifer: notifer,
+		logger:  logger.With(slog.String("context", "CloudPaymentsReccurentNotificationHandler")),
+	}
+
+	r.Post("/payments/cloudpayment/webhook/reccurent/"+routeHash, cpSrv.Handle)
+}
