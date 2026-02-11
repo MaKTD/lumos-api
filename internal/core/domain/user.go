@@ -41,10 +41,6 @@ func (u *User) SubExpired(now time.Time) bool {
 		return false
 	}
 
-	if u.Tariff == UserTariffTrial {
-		return now.After(u.ExpiresAt)
-	}
-
 	return now.After(u.ExpiresAt)
 }
 

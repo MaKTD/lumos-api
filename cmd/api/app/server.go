@@ -108,6 +108,7 @@ func (r *Server) Init() error {
 		emailSrv,
 		r.bot,
 		cloudPaymentsClient,
+		r.cfg.handlers.TildaProjectID,
 	)
 
 	apiHandler := httpapi.NewRouter()
@@ -154,6 +155,16 @@ func (r *Server) Init() error {
 			r.cfg.handlers.CloudPaymentsRecurrentRouteHash,
 			paymentSrv,
 			r.bot,
+			r.rootLogger,
+		)
+		httpapi.RegInUserAccessRoute(
+			router,
+			paymentSrv,
+			r.rootLogger,
+		)
+		httpapi.RegInUserInfoRoute(
+			router,
+			paymentSrv,
 			r.rootLogger,
 		)
 	})

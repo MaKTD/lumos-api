@@ -27,6 +27,16 @@ type EmailsSrv interface {
 }
 
 type Service interface {
+	IsAccessAlowed(
+		ctx context.Context,
+		email string,
+		projectID string,
+	) (bool, error)
+	User(
+		ctx context.Context,
+		email string,
+		projectID string,
+	) (*domain.User, error)
 	RegisterFromTrial(
 		ctx context.Context,
 		email string,

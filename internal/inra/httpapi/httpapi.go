@@ -103,3 +103,23 @@ func RegInCloudPaymentsReccurentNotif(
 
 	r.Post("/payments/cloudpayment/webhook/reccurent/"+routeHash, cpSrv.Handle)
 }
+
+func RegInUserAccessRoute(
+	r chi.Router,
+	srv payments.Service,
+	logger *slog.Logger,
+) {
+	userAccessSrv := userAccess{srv: srv, logger: logger.With(slog.String("context", "UserAccessHandler"))}
+
+	r.Get("/payments/user/access", userAccessSrv.Handle)
+}
+
+func RegInUserInfoRoute(
+	r chi.Router,
+	srv payments.Service,
+	logger *slog.Logger,
+) {
+	userInfoSrv := userInfo{srv: srv, logger: logger.With(slog.String("context", "UserInfoHandler"))}
+
+	r.Get("/payments/user/info", userInfoSrv.Handle)
+}

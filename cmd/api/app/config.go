@@ -36,6 +36,7 @@ type handlersConf struct {
 	ProdamusPayRouteHash            string `env:"HTTP_PRODAMUS_PAYMENT_NOTIFICATION_ROUTE_HASH,required"`
 	CloudPaymentsPayRouteHash       string `env:"HTTP_CLOUD_PAYMENTS_PAY_NOTIFICATION_ROUTE_HASH,required"`
 	CloudPaymentsRecurrentRouteHash string `env:"HTTP_CLOUD_PAYMENTS_RECURRENT_NOTIFICATION_ROUTE_HASH,required"`
+	TildaProjectID                  string `env:"TILDA_PROJECT_ID,required"`
 }
 
 type Unisender struct {

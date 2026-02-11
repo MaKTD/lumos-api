@@ -15,6 +15,7 @@ import (
 
 var (
 	ErrUserAlreadyRegistered = errors.New("user already registered")
+	ErrInvalidProjectId = errors.New("invalid project ID")
 	oneMonthSubNames         = []string{
 		strings.ToLower(strings.TrimSpace("Доступ на месяц")),
 		strings.ToLower(strings.TrimSpace("Продление 1 месяц")),
@@ -30,10 +31,11 @@ var (
 )
 
 type service struct {
-	repo          UserRepo
-	emails        EmailsSrv
-	notif         notify.Service
-	cloudPayments CloudPayments
+	repo           UserRepo
+	emails         EmailsSrv
+	notif          notify.Service
+	cloudPayments  CloudPayments
+	tildaProjectID string
 }
 
 func NewPaymentsService(
@@ -41,13 +43,65 @@ func NewPaymentsService(
 	emails EmailsSrv,
 	notif notify.Service,
 	cloudPayments CloudPayments,
+	tildaProjectID string,
 ) Service {
 	return &service{
-		repo:          repo,
-		emails:        emails,
-		notif:         notif,
-		cloudPayments: cloudPayments,
+		repo:           repo,
+		emails:         emails,
+		notif:          notif,
+		cloudPayments:  cloudPayments,
+		tildaProjectID: tildaProjectID,
 	}
+}
+
+func (s *service) IsAccessAlowed(
+	ctx context.Context,
+	email string,
+	projectID string,
+) (bool, error) {
+	if s.normalizeStr(projectID) != s.normalizeStr(s.tildaProjectID) {
+		return false, nil
+	}
+
+	email = s.normalizeStr(email)
+	if email == "" {
+		return false, nil
+	}
+
+	user, err := s.repo.ByEmail(ctx, email)
+	if err != nil {
+		s.notif.ForAdmin(fmt.Sprintf("[IsAccessAlowed]: error fetching user by email (%s): %v", email, err))
+		return false, err
+	}
+
+	if user == nil {
+		return false, nil
+	}
+
+	return !user.SubExpired(time.Now()), nil
+}
+
+func (s *service) User(
+	ctx context.Context,
+	email string,
+	projectID string,
+) (*domain.User, error) {
+	if s.normalizeStr(projectID) != s.normalizeStr(s.tildaProjectID) {
+		return nil, ErrInvalidProjectId
+	}
+
+	email = s.normalizeStr(email)
+	if email == "" {
+		return nil, nil
+	}
+
+	user, err := s.repo.ByEmail(ctx, email)
+	if err != nil {
+		s.notif.ForAdmin(fmt.Sprintf("[UserInfo]: error fetching user by email (%s): %v", email, err))
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (s *service) RegisterFromTrial(
