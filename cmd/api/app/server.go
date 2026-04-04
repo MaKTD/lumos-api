@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"doctormakarhina/lumos/internal/core/notify"
 	"doctormakarhina/lumos/internal/core/payments"
 	"doctormakarhina/lumos/internal/inra/cloudpayments"
 	"doctormakarhina/lumos/internal/inra/emails"
@@ -32,6 +33,7 @@ type Server struct {
 	rootLogger *slog.Logger
 	db         *sqlx.DB
 	bot        *tgbot.Bot
+	notif      notify.Service
 	api        *httpx.Server
 }
 
@@ -82,7 +84,10 @@ func (r *Server) Init() error {
 		Logger:        r.rootLogger,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to init admin tg bot: %w", err)
+		r.rootLogger.Warn("admin tg bot unavailable, notifications disabled", slog.String("err", err.Error()))
+		r.notif = notify.NewNoop()
+	} else {
+		r.notif = r.bot
 	}
 
 	usersRepo := pg.NewUserRepo(r.db)
@@ -109,7 +114,7 @@ func (r *Server) Init() error {
 	paymentSrv := payments.NewPaymentsService(
 		usersRepo,
 		emailSrv,
-		r.bot,
+		r.notif,
 		cloudPaymentsClient,
 		r.cfg.handlers.TildaProjectID,
 	)
@@ -137,27 +142,27 @@ func (r *Server) Init() error {
 			router,
 			r.cfg.handlers.TrialPaymentsRouteHash,
 			paymentSrv,
-			r.bot,
+			r.notif,
 		)
 		httpapi.RegInProdamusPayWebHook(
 			router,
 			r.cfg.handlers.ProdamusPayRouteHash,
 			paymentSrv,
-			r.bot,
+			r.notif,
 			r.rootLogger,
 		)
 		httpapi.RegInCloudPaymentsPayHook(
 			router,
 			r.cfg.handlers.CloudPaymentsPayRouteHash,
 			paymentSrv,
-			r.bot,
+			r.notif,
 			r.rootLogger,
 		)
 		httpapi.RegInCloudPaymentsReccurentNotif(
 			router,
 			r.cfg.handlers.CloudPaymentsRecurrentRouteHash,
 			paymentSrv,
-			r.bot,
+			r.notif,
 			r.rootLogger,
 		)
 		httpapi.RegInUserAccessRoute(
@@ -223,7 +228,7 @@ func (r *Server) Run() error {
 			},
 		)
 	}
-	{
+	if r.bot != nil {
 		ctx, cancel := context.WithCancel(context.Background())
 		g.Add(
 			func() error {
