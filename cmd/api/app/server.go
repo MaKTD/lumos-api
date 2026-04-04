@@ -81,6 +81,9 @@ func (r *Server) Init() error {
 		PollerTimeout: r.cfg.tgBot.PollerTimeout,
 		Logger:        r.rootLogger,
 	})
+	if err != nil {
+		return fmt.Errorf("failed to init admin tg bot: %w", err)
+	}
 
 	usersRepo := pg.NewUserRepo(r.db)
 
