@@ -49,6 +49,7 @@ type Service interface {
 		email string,
 		name string,
 		price float32,
+		orderID string,
 	) error
 	RegisterFromCloudPayments(
 		ctx context.Context,
@@ -57,6 +58,7 @@ type Service interface {
 		name string,
 		price float32,
 		subscriptionID string,
+		transactionID string,
 	) error
 	RegisterCloudPaymentReccurent(
 		ctx context.Context,

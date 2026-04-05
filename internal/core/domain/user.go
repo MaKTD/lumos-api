@@ -34,6 +34,7 @@ type User struct {
 	SubscriptionID     string    `db:"subscription_id" json:"subscription_id"`
 	SubscriptionStatus string    `db:"subscription_status" json:"subscription_status"`
 	LastSubPrice       float32   `db:"last_sub_price" json:"last_sub_price"`
+	LastTransactionID  string    `db:"last_transaction_id" json:"last_transaction_id"`
 }
 
 func (u *User) SubExpired(now time.Time) bool {

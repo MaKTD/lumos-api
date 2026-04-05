@@ -5,6 +5,7 @@
 /dev/redis-data-backup
 /dev/pg-data
 /dev/.dev.env
+/build/*
 
 # Logs
 logs

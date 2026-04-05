@@ -160,6 +160,7 @@ func (s *service) RegisterFromProdamus(
 	email string,
 	name string,
 	price float32,
+	orderID string,
 ) error {
 	emailNorm := s.normalizeStr(email)
 	subNorm := s.normalizeStr(subName)
@@ -199,6 +200,11 @@ func (s *service) RegisterFromProdamus(
 		return fmt.Errorf("failed to find or create user")
 	}
 
+	if orderID != "" && user.LastTransactionID == orderID {
+		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromProdamus]: duplicate webhook for user (%s), orderID=%s, skipping", emailNorm, orderID))
+		return nil
+	}
+
 	err = s.emails.CancelTrialExpired(ctx, user.Email)
 	if err != nil {
 		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromProdamus]: error canceling trial for email (%s): %v", emailNorm, err))
@@ -215,6 +221,7 @@ func (s *service) RegisterFromProdamus(
 	user.SubscriptionID = ""
 	user.SubscriptionStatus = ""
 	user.LastSubPrice = price
+	user.LastTransactionID = orderID
 
 	_, err = s.repo.UpdateSub(ctx, *user)
 	if err != nil {
@@ -239,6 +246,7 @@ func (s *service) RegisterFromCloudPayments(
 	name string,
 	price float32,
 	subscriptionID string,
+	transactionID string,
 ) error {
 	subscriptionID = strings.TrimSpace(subscriptionID)
 	emailNorm := s.normalizeStr(email)
@@ -282,6 +290,11 @@ func (s *service) RegisterFromCloudPayments(
 		return fmt.Errorf("failed to find or create user")
 	}
 
+	if transactionID != "" && user.LastTransactionID == transactionID {
+		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromCloudPayments]: duplicate webhook for user (%s), transactionID=%s, skipping", emailNorm, transactionID))
+		return nil
+	}
+
 	err = s.emails.CancelTrialExpired(ctx, user.Email)
 	if err != nil {
 		s.notif.ForAdmin(fmt.Sprintf("[RegisterFromCloudPayments]: error canceling trial for email (%s): %v", emailNorm, err))
@@ -306,6 +319,7 @@ func (s *service) RegisterFromCloudPayments(
 	user.SubscriptionID = subscriptionID
 	user.SubscriptionStatus = subStatus
 	user.LastSubPrice = price
+	user.LastTransactionID = transactionID
 
 	_, err = s.repo.UpdateSub(ctx, *user)
 	if err != nil {

@@ -20,7 +20,7 @@ func NewUserRepo(db *sqlx.DB) *UserRepo {
 
 func (r *UserRepo) ByEmail(ctx context.Context, email string) (*domain.User, error) {
 	const q = `
-  SELECT id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price
+  SELECT id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price, last_transaction_id
   FROM lumos.users
   WHERE email = $1
   LIMIT 1
@@ -40,8 +40,8 @@ func (r *UserRepo) ByEmail(ctx context.Context, email string) (*domain.User, err
 
 func (r *UserRepo) Create(ctx context.Context, user domain.User) (*domain.User, error) {
 	const q = `
-  INSERT INTO lumos.users (id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price)
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+  INSERT INTO lumos.users (id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price, last_transaction_id)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   RETURNING *
  `
 
@@ -58,6 +58,7 @@ func (r *UserRepo) Create(ctx context.Context, user domain.User) (*domain.User, 
 		user.SubscriptionID,
 		user.SubscriptionStatus,
 		user.LastSubPrice,
+		user.LastTransactionID,
 	)
 	if err != nil {
 		return nil, err
@@ -81,7 +82,7 @@ func (r *UserRepo) FindByEmailOrCreate(ctx context.Context, user domain.User) (*
 	}
 
 	const qFind = `
-  SELECT id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price
+  SELECT id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price, last_transaction_id
   FROM lumos.users
   WHERE email = $1
   LIMIT 1
@@ -99,8 +100,8 @@ func (r *UserRepo) FindByEmailOrCreate(ctx context.Context, user domain.User) (*
 	}
 
 	const qInsert = `
-  INSERT INTO lumos.users (id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price)
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+  INSERT INTO lumos.users (id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price, last_transaction_id)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   RETURNING *
  `
 	var created domain.User
@@ -116,6 +117,7 @@ func (r *UserRepo) FindByEmailOrCreate(ctx context.Context, user domain.User) (*
 		user.SubscriptionID,
 		user.SubscriptionStatus,
 		user.LastSubPrice,
+		user.LastTransactionID,
 	)
 	if err != nil {
 		// Conflicts (e.g., UNIQUE(email)) are treated as errors and returned as-is.
@@ -149,8 +151,9 @@ func (r *UserRepo) UpdateSub(ctx context.Context, user domain.User) (*domain.Use
 			last_sub_price = $2,
 			expires_at = $3,
 			subscription_id = $4,
-			subscription_status = $5
-		WHERE id = $6
+			subscription_status = $5,
+			last_transaction_id = $6
+		WHERE id = $7
 		RETURNING *
 	`
 
@@ -164,6 +167,7 @@ func (r *UserRepo) UpdateSub(ctx context.Context, user domain.User) (*domain.Use
 		user.ExpiresAt,
 		user.SubscriptionID,
 		user.SubscriptionStatus,
+		user.LastTransactionID,
 		user.ID,
 	)
 	if err != nil {

@@ -51,5 +51,12 @@ CREATE TABLE IF NOT EXISTS lumos.users (
   expires_at           timestamptz NOT NULL,
   subscription_id      varchar NOT NULL,
   subscription_status  varchar NOT NULL,
-  last_sub_price       real NOT NULL
+  last_sub_price       real NOT NULL,
+  last_transaction_id  varchar NOT NULL DEFAULT '',
+  updated_at           timestamptz NOT NULL DEFAULT NOW()
 );
+
+CREATE OR REPLACE TRIGGER set_timestamp_users
+  BEFORE UPDATE ON lumos.users
+  FOR EACH ROW
+  EXECUTE FUNCTION trigger_set_timestamp();

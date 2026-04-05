@@ -27,6 +27,7 @@ func (s *prodamusPayNotification) Handle(w http.ResponseWriter, r *http.Request)
 	price := r.FormValue("sum")
 	name := r.FormValue("_param_name")
 	paymentStatus := r.FormValue("payment_status")
+	orderID := r.FormValue("order_id")
 
 	if paymentStatus != "success" {
 		s.notifer.ForAdmin(fmt.Sprintf("[ProdamusPayHandler] recieve payment notification with not success status = %s, email = %s, tariff = %s, price = %s, name = %s", paymentStatus, email, tariff, price, name))
@@ -53,6 +54,7 @@ func (s *prodamusPayNotification) Handle(w http.ResponseWriter, r *http.Request)
 		email,
 		name,
 		float32(priceParsed),
+		orderID,
 	)
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)

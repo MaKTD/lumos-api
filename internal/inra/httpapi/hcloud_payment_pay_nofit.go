@@ -27,6 +27,7 @@ func (s *cloudPaymentsPayNotification) Handle(w http.ResponseWriter, r *http.Req
 	priceStr := r.FormValue("Amount")
 	subscriptionID := r.FormValue("SubscriptionId")
 	opType := r.FormValue("OperationType")
+	transactionID := r.FormValue("TransactionId")
 
 	if opType != "Payment" {
 		s.notifer.ForAdmin(fmt.Sprintf("[CloudPaymentsPayHandler] recieve payment notification with invalid operation type = %s. email = %s, tariff = %s", opType, email, tariff))
@@ -54,6 +55,7 @@ func (s *cloudPaymentsPayNotification) Handle(w http.ResponseWriter, r *http.Req
 		name,
 		float32(priceParsed),
 		subscriptionID,
+		transactionID,
 	)
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
