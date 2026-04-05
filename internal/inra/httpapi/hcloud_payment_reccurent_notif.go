@@ -33,6 +33,12 @@ func (s *cloudPaymentReccurentNotif) Handle(w http.ResponseWriter, r *http.Reque
 
 	err := s.srv.RegisterCloudPaymentReccurent(r.Context(), subscriptionID, email, status)
 	if err != nil {
+		s.logger.Error("RegisterCloudPaymentReccurent failed",
+			slog.String("email", email),
+			slog.String("subscriptionID", subscriptionID),
+			slog.String("status", status),
+			slog.String("err", err.Error()),
+		)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

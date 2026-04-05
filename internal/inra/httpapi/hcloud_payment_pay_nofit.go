@@ -58,6 +58,13 @@ func (s *cloudPaymentsPayNotification) Handle(w http.ResponseWriter, r *http.Req
 		transactionID,
 	)
 	if err != nil {
+		s.logger.Error("RegisterFromCloudPayments failed",
+			slog.String("email", email),
+			slog.String("tariff", tariff),
+			slog.String("subscriptionID", subscriptionID),
+			slog.String("transactionID", transactionID),
+			slog.String("err", err.Error()),
+		)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

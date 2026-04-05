@@ -57,6 +57,12 @@ func (s *prodamusPayNotification) Handle(w http.ResponseWriter, r *http.Request)
 		orderID,
 	)
 	if err != nil {
+		s.logger.Error("RegisterFromProdamus failed",
+			slog.String("email", email),
+			slog.String("tariff", tariff),
+			slog.String("orderID", orderID),
+			slog.String("err", err.Error()),
+		)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

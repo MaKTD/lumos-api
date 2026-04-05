@@ -42,7 +42,7 @@ func (r *UserRepo) Create(ctx context.Context, user domain.User) (*domain.User, 
 	const q = `
   INSERT INTO lumos.users (id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price, last_transaction_id)
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-  RETURNING *
+  RETURNING id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price, last_transaction_id
  `
 
 	var created domain.User
@@ -102,7 +102,7 @@ func (r *UserRepo) FindByEmailOrCreate(ctx context.Context, user domain.User) (*
 	const qInsert = `
   INSERT INTO lumos.users (id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price, last_transaction_id)
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-  RETURNING *
+  RETURNING id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price, last_transaction_id
  `
 	var created domain.User
 	err = tx.GetContext(
@@ -154,7 +154,7 @@ func (r *UserRepo) UpdateSub(ctx context.Context, user domain.User) (*domain.Use
 			subscription_status = $5,
 			last_transaction_id = $6
 		WHERE id = $7
-		RETURNING *
+		RETURNING id, email, name, tariff, expires_at, subscription_id, subscription_status, last_sub_price, last_transaction_id
 	`
 
 	var updated domain.User
